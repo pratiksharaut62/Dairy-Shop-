@@ -1,0 +1,20 @@
+# Used by Vercel (see ../vercel.json). The plain Dockerfile next to this one is for other hosts: it also runs the
+# database migrations on every start, which is not wanted on a serverless platform with many short-lived instances —
+# here migrations are applied by hand (see ../DEPLOY.md).
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:22-alpine
+WORKDIR /app
+ENV NODE_ENV=production
+# Vercel sends container traffic to port 80 unless PORT is set in the project's environment variables.
+ENV PORT=80
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY --from=build /app/dist ./dist
+EXPOSE 80
+CMD ["node", "dist/main.js"]

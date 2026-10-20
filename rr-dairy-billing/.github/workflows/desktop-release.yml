@@ -1,0 +1,56 @@
+name: Desktop release
+
+# Tauri installers are platform-specific — a Windows .msi has to be built on
+# a Windows runner, a macOS .dmg on a macOS runner — so unlike the rest of
+# this repo, this genuinely needs CI rather than a single build step. Pushing
+# a tag like `app-v0.1.0` builds the Windows installers and attaches them to a
+# draft GitHub Release; `workflow_dispatch` lets you trigger the same thing by hand
+# without cutting a tag, e.g. to sanity-check a change before releasing it.
+on:
+  push:
+    tags:
+      - 'app-v*'
+  workflow_dispatch:
+
+# tauri-action creates (or updates) a GitHub Release and uploads the
+# installers to it — the default GITHUB_TOKEN is read-only unless a
+# workflow explicitly asks for write access here.
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # The shop runs Windows (drive letters, Documents folder). Add macos-latest / ubuntu-22.04 back here if ever needed.
+          - platform: windows-latest
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Repo variable (Settings → Secrets and variables → Actions → Variables): bakes the cloud API into the installer.
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'Krishna Collection ${{ github.ref_name }}'
+          releaseDraft: true
+          prerelease: false

@@ -1,0 +1,174 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "enables the default permissions",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-show",
+    "core:window:allow-set-focus",
+    "core:window:allow-destroy",
+    "core:window:allow-is-fullscreen",
+    "core:window:allow-set-fullscreen",
+    "dialog:default",
+    "fs:default",
+    "fs:allow-write-text-file",
+    "fs:allow-read-text-file",
+    "fs:allow-mkdir",
+    "fs:allow-read-dir",
+    "fs:allow-remove",
+    "fs:allow-rename",
+    "fs:allow-exists",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        {
+          "path": "$DOCUMENT/Krishna Collection Backups"
+        },
+        {
+          "path": "$DOCUMENT/Krishna Collection Backups/**"
+        },
+        {
+          "path": "D:\\Krishna Collection Backups"
+        },
+        {
+          "path": "D:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "E:\\Krishna Collection Backups"
+        },
+        {
+          "path": "E:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "F:\\Krishna Collection Backups"
+        },
+        {
+          "path": "F:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "G:\\Krishna Collection Backups"
+        },
+        {
+          "path": "G:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "H:\\Krishna Collection Backups"
+        },
+        {
+          "path": "H:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "I:\\Krishna Collection Backups"
+        },
+        {
+          "path": "I:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "J:\\Krishna Collection Backups"
+        },
+        {
+          "path": "J:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "K:\\Krishna Collection Backups"
+        },
+        {
+          "path": "K:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "L:\\Krishna Collection Backups"
+        },
+        {
+          "path": "L:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "M:\\Krishna Collection Backups"
+        },
+        {
+          "path": "M:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "N:\\Krishna Collection Backups"
+        },
+        {
+          "path": "N:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "O:\\Krishna Collection Backups"
+        },
+        {
+          "path": "O:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "P:\\Krishna Collection Backups"
+        },
+        {
+          "path": "P:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "Q:\\Krishna Collection Backups"
+        },
+        {
+          "path": "Q:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "R:\\Krishna Collection Backups"
+        },
+        {
+          "path": "R:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "S:\\Krishna Collection Backups"
+        },
+        {
+          "path": "S:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "T:\\Krishna Collection Backups"
+        },
+        {
+          "path": "T:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "U:\\Krishna Collection Backups"
+        },
+        {
+          "path": "U:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "V:\\Krishna Collection Backups"
+        },
+        {
+          "path": "V:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "W:\\Krishna Collection Backups"
+        },
+        {
+          "path": "W:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "X:\\Krishna Collection Backups"
+        },
+        {
+          "path": "X:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "Y:\\Krishna Collection Backups"
+        },
+        {
+          "path": "Y:\\Krishna Collection Backups\\**"
+        },
+        {
+          "path": "Z:\\Krishna Collection Backups"
+        },
+        {
+          "path": "Z:\\Krishna Collection Backups\\**"
+        }
+      ]
+    }
+  ]
+}
