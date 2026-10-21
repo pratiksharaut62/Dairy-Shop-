@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useApp } from '../state'
 import { CloudSignIn } from '../components/CloudSignIn'
 import { fetchSnapshot, hydrateFromSnapshot } from '../lib/cloud'
 import { createLocalStore } from '../db/localSetup'
+import { DEMO_PINS, DEMO_STORE, IS_DEMO } from '../lib/demo'
 import { db } from '../db'
 import { Segmented } from '../components/ui'
 
@@ -11,12 +12,27 @@ import { Segmented } from '../components/ui'
  *  • Start on this device — no server needed; the shop works fully offline and can be linked to a server later.
  *  • Sign in to a server — downloads an existing store from the cloud backend.
  */
+let demoBoot: Promise<Awaited<ReturnType<typeof createLocalStore>>> | null = null
+
 export default function Setup() {
   const { finishSetup, login, loginWithToken, toast } = useApp()
   const [mode, setMode] = useState<'local' | 'cloud'>('local')
   const [f, setF] = useState({ storeName: '', ownerName: '', pin: '', demo: true })
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+
+  // Public demo: build the sample dairy straight away and walk in as the owner — nobody has to fill in a form.
+  useEffect(() => {
+    if (!IS_DEMO) return
+    void (demoBoot ??= createLocalStore({ storeName: DEMO_STORE, ownerName: 'Ramesh Patil', pin: DEMO_PINS.owner, demo: true, demoUsers: true }))
+      .then(async (owner) => {
+        const user = (await db.users.get(owner.id))!
+        finishSetup()
+        login(user, DEMO_PINS.owner)
+      })
+      .catch((e: Error) => { demoBoot = null; setError(e.message || 'Could not prepare the demo') })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function startLocal(e: React.FormEvent) {
     e.preventDefault()
@@ -28,6 +44,21 @@ export default function Setup() {
       login(user, f.pin)
       toast(`Welcome, ${user.name.split(' ')[0]}`, 'ok')
     } catch (err) { setError((err as Error).message) } finally { setBusy(false) }
+  }
+
+  if (IS_DEMO) {
+    return (
+      <div className="login-wrap">
+        <div className="login-card" style={{ textAlign: 'center' }}>
+          <div className="brand-mark" style={{ margin: '0 auto 12px' }}>RD</div>
+          <h1 style={{ fontSize: 18 }}>{DEMO_STORE}</h1>
+          {error
+            ? <div className="small" role="alert" style={{ color: 'var(--danger)', marginTop: 12 }}>{error}</div>
+            : <div className="small muted" style={{ marginTop: 10 }}>Preparing the demo dairy — farmers, milk collections, sales and stock…</div>}
+          {!error && <div className="skeleton" style={{ height: 6, marginTop: 18, borderRadius: 99 }} />}
+        </div>
+      </div>
+    )
   }
 
   return (

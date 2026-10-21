@@ -7,6 +7,8 @@ import { CloudSignIn } from '../components/CloudSignIn'
 import { mergeStaffFromCloud, verifyPinOnline } from '../lib/cloud'
 import { withSyncPaused } from '../db/syncHooks'
 import { db } from '../db'
+import { IS_DEMO, DEMO_PINS } from '../lib/demo'
+import { resetDemo } from '../db/localSetup'
 import { clearPinFailures, hashPin, isLegacyPin, lockedForMs, recordPinFailure, verifyPin, waitText } from '../lib/pin'
 
 const ROLE_NOTE: Record<string, string> = {
@@ -77,6 +79,16 @@ export default function Login() {
             <div className="small muted">Billing & Inventory System</div>
           </div>
         </div>
+
+        {IS_DEMO && !emailMode && (
+          <div className="saved-banner" style={{ marginBottom: 12, fontSize: 12.5, alignItems: 'flex-start' }}>
+            <div className="grow">
+              <b>Live demo.</b> PINs — Owner <b>{DEMO_PINS.owner}</b> · Manager <b>{DEMO_PINS.manager}</b> · Cashier <b>{DEMO_PINS.cashier}</b>
+              <div className="muted">Sample data, saved only in this browser.</div>
+            </div>
+            <button className="btn btn-sm" onClick={() => { if (window.confirm('Reset the demo to its original sample data?')) void resetDemo() }}>Reset</button>
+          </div>
+        )}
 
         {emailMode ? (
           <>

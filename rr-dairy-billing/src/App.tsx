@@ -1,5 +1,7 @@
 import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { IS_DEMO } from './lib/demo'
+import { resetDemo } from './db/localSetup'
 import { useApp, type Permission } from './state'
 import { exportBackup } from './db'
 import { downloadFile } from './lib/csv'
@@ -181,7 +183,10 @@ function AppHeader() {
       <div className="grow" />
       <span className="gh-chip">{now.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</span>
       <span className="gh-chip gh-shift"><i className="dot" />{morning ? 'Morning shift' : 'Evening shift'}</span>
-      <SyncBadge compact />
+      {IS_DEMO ? (
+        <button className="gh-chip" style={{ cursor: 'pointer' }} title="Reset the demo to its original sample data"
+          onClick={() => { if (window.confirm('Reset the demo to its original sample data?')) void resetDemo() }}>Demo data · Reset</button>
+      ) : <SyncBadge compact />}
     </header>
   )
 }

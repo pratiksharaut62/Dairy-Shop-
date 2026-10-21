@@ -3,6 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db'
 import { decideWastage, receiveLot, recordWastage } from '../db/dairy'
 import { DAY, fmtDate, fmtDateTime, fromInputDate, toInputDate } from '../lib/dates'
+import { expiringSoon } from '../lib/dairyData'
 import { inr } from '../lib/money'
 import { Card, Empty, Field, Modal, Segmented, Stat } from '../components/ui'
 import { AlertIcon, BoxesIcon, CheckCircle, Close, Plus, TrashIcon } from '../components/icons'
@@ -50,14 +51,14 @@ function LotsTab({ canReceive, canWriteOff }: { canReceive: boolean; canWriteOff
   const now = Date.now()
   const sorted = useMemo(() => [...lots].sort((a, b) => (a.expiresAt ?? Infinity) - (b.expiresAt ?? Infinity)), [lots])
   const expired = sorted.filter((l) => l.expiresAt !== undefined && l.expiresAt <= now)
-  const soon = sorted.filter((l) => l.expiresAt !== undefined && l.expiresAt > now && l.expiresAt <= now + 3 * DAY)
+  const soon = sorted.filter((l) => expiringSoon(l, now))
 
   return (
     <>
       <div className="stat-grid">
         <Stat label="Active lots" value={sorted.length} icon={<BoxesIcon />} tone="brand" />
         <Stat label="Expired (not sellable)" value={expired.length} icon={<AlertIcon />} tone={expired.length ? 'danger' : 'ok'} foot={expired.length ? 'Write these off' : 'None'} />
-        <Stat label="Expiring in 3 days" value={soon.length} tone={soon.length ? 'warn' : 'ok'} foot="Sell or use these first" />
+        <Stat label="Expiring soon" value={soon.length} tone={soon.length ? 'warn' : 'ok'} foot="Close to the end of their shelf life" />
       </div>
       <div className="row"><div className="grow" />{canReceive && <button className="btn btn-primary" onClick={() => setReceiving(true)}><Plus size={15} /> Receive lot</button>}</div>
       <Card tight>
@@ -67,7 +68,7 @@ function LotsTab({ canReceive, canWriteOff }: { canReceive: boolean; canWriteOff
               <thead><tr><th>Lot</th><th>Item</th><th>Source</th><th className="num">Available</th><th>Expires</th><th /></tr></thead>
               <tbody>{sorted.map((l) => {
                 const gone = l.expiresAt !== undefined && l.expiresAt <= now
-                const near = !gone && l.expiresAt !== undefined && l.expiresAt <= now + 3 * DAY
+                const near = expiringSoon(l, now)
                 return (
                   <tr key={l.id}>
                     <td className="mono bold">{l.lotNo}</td><td>{nameOf(l.variantId)}</td>

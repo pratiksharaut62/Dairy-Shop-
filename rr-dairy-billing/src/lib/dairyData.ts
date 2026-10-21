@@ -12,6 +12,18 @@ export function milkTotals(cols: Collection[]) {
   return { litres, amount, avgFat: w((c) => c.fat), avgSnf: w((c) => c.snf), avgRate: litres ? round2(amount / litres) : 0, count: approved.length }
 }
 
+/**
+ * "Expiring soon" scales with shelf life: raw milk lives a day, so it is only worth a warning in its last few hours;
+ * paneer or curd (a week) in its last day or two; ghee never gets closer than `withinDays` days. Without this, every
+ * fresh litre of milk would sit permanently on the expiry alert.
+ */
+export function expiringSoon(lot: Lot, now: number, withinDays = 3): boolean {
+  if (lot.expiresAt === undefined || lot.expiresAt <= now) return false
+  const shelf = lot.expiresAt - lot.producedAt
+  const window = shelf > 0 ? Math.min(withinDays * DAY, shelf * 0.25) : withinDays * DAY
+  return lot.expiresAt - now <= window
+}
+
 export interface ExpiryRow { lot: Lot; name: string; days: number }
 
 export async function loadExpiry(withinDays = 3): Promise<{ expired: ExpiryRow[]; soon: ExpiryRow[] }> {
@@ -29,7 +41,7 @@ export async function loadExpiry(withinDays = 3): Promise<{ expired: ExpiryRow[]
   rows.sort((a, b) => (a.lot.expiresAt ?? 0) - (b.lot.expiresAt ?? 0))
   return {
     expired: rows.filter((r) => (r.lot.expiresAt ?? 0) <= now),
-    soon: rows.filter((r) => (r.lot.expiresAt ?? 0) > now && (r.lot.expiresAt ?? 0) <= now + withinDays * DAY),
+    soon: rows.filter((r) => expiringSoon(r.lot, now, withinDays)),
   }
 }
 

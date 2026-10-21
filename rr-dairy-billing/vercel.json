@@ -1,24 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "services": {
-    "app": {
-      "root": ".",
-      "framework": "vite",
-      "buildCommand": "VITE_API_URL=/api npm run build"
-    },
-    "backend": {
-      "root": "backend",
-      "entrypoint": "Dockerfile.vercel"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": { "service": "backend" }
-    },
-    {
-      "source": "/(.*)",
-      "destination": { "service": "app" }
-    }
+  "framework": "vite",
+  "installCommand": "npm install",
+  "buildCommand": "VITE_DEMO=1 npx vite build",
+  "outputDirectory": "dist",
+  "headers": [
+    { "source": "/assets/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] }
   ]
 }

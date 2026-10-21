@@ -109,3 +109,9 @@ Nothing here needs the cloud API. On first launch choose **Start on this device*
 4-digit PIN, and tick "sample dairy data" to get farmers, a rate chart, milk collections, a paneer batch, lots that are
 expiring or expired, and a delivery to look at. Data is kept in the browser (IndexedDB). A server can be connected later
 in Settings; "Sign in to a server" on the first screen is only for loading an existing cloud store.
+
+## Public demo on Vercel
+
+`vercel.json` is now a frontend-only config that builds in **demo mode** (`VITE_DEMO=1`): the first visit creates a full
+sample dairy in the visitor's browser and signs them in. See `DEPLOY-DEMO.md`. The original app + API configuration is kept
+as `vercel.fullstack.json`.
